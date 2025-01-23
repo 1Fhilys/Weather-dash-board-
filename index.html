@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Weather & Sports Dashboard</title>
+    <title>Weather Dashboard</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -13,54 +13,49 @@
             padding: 20px;
         }
         .container {
-            max-width: 800px;
+            max-width: 600px;
             margin: 0 auto;
             background: #ffffff;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             padding: 20px;
             border-radius: 8px;
         }
-        .section {
-            margin-bottom: 40px;
-        }
         h1 {
             color: #333;
         }
-        .widget {
-            width: 100%;
+        #weather-info {
+            font-size: 18px;
+            color: #555;
+        }
+        #error {
+            color: red;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Weather Section -->
-        <div class="section" id="weather">
-            <h1>Current Weather</h1>
-            <div id="weather-info">Loading weather...</div>
-        </div>
-
-        <!-- Sports Section -->
-        <div class="section" id="sports">
-            <h1>Sports Updates</h1>
-            <!-- Sports Widget (e.g., ScoreBat) -->
-            <iframe class="widget" src="https://www.scorebat.com/embed/" frameborder="0" allowfullscreen></iframe>
-        </div>
+        <h1>Current Weather in New York, NY</h1>
+        <div id="weather-info">Loading weather...</div>
+        <p id="error"></p>
     </div>
 
     <script>
-        // Weather API Settings
-        const apiKey = "4335dec83f54a678da1412ae65a20bde"; // Get from OpenWeatherMap (https://openweathermap.org/api)
-        const city = "New York"; //
+        // OpenWeatherMap API Key and URL
+        const apiKey = "4335dec83f54a678da1412ae65a20bde";
+        const city = "New York";
+        const country = "US";
+        const url = `https://api.openweathermap.org/data/2.5/weather?q=${city},${country}&units=metric&appid=${apiKey}`;
 
         // Fetch Weather Data
         async function fetchWeather() {
-            const url = `https://api.openweathermap.org/data/2.5/weather?q=${New York}&units=metric&appid=${4335dec83f54a678da1412ae65a20bde}`;
             try {
                 const response = await fetch(url);
+                if (!response.ok) throw new Error(`Error: ${response.statusText}`);
+                
                 const data = await response.json();
                 displayWeather(data);
             } catch (error) {
-                document.getElementById('weather-info').innerText = "Unable to load weather data.";
+                document.getElementById('error').textContent = "Failed to load weather data. Please try again later.";
             }
         }
 
@@ -70,12 +65,13 @@
             const weatherInfo = `
                 <p><strong>Location:</strong> ${name}</p>
                 <p><strong>Temperature:</strong> ${main.temp} °C</p>
+                <p><strong>Humidity:</strong> ${main.humidity}%</p>
                 <p><strong>Condition:</strong> ${weather[0].description}</p>
             `;
             document.getElementById('weather-info').innerHTML = weatherInfo;
         }
 
-        // Load Data
+        // Load Weather Data on Page Load
         fetchWeather();
     </script>
 </body>
